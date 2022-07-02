@@ -4,7 +4,9 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
@@ -44,9 +46,9 @@ class SiteController extends Controller
     public function actions()
     {
         return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
+//            'error' => [
+//                'class' => 'yii\web\ErrorAction',
+//            ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
@@ -124,5 +126,13 @@ class SiteController extends Controller
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    public function actionError() {
+        $exception = Yii::$app->errorHandler->exception;
+        if ($exception === null) {
+            $exception = new BadRequestHttpException();
+        }
+        return $this->asJson(['code' => $exception->statusCode, 'message' => $exception->getMessage()]);
     }
 }
