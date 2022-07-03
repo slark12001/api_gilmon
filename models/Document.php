@@ -9,7 +9,7 @@ use yii\db\Query;
 
 /**
  * @property string $id
- * @property string $status
+ * @property int $status
  * @property string $payload
  * @property $createAt
  * @property $modifyAt
@@ -20,7 +20,7 @@ class Document extends \yii\db\ActiveRecord
     public const STATUS_PUBLISH = 2;
     public const STATUSES = [
         self::STATUS_DRAFT => 'draft',
-        self::STATUS_PUBLISH => 'publish'
+        self::STATUS_PUBLISH => 'published'
     ];
 
     public static function tableName()
@@ -28,7 +28,7 @@ class Document extends \yii\db\ActiveRecord
         return '{{%document}}';
     }
 
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'id' => [
@@ -58,29 +58,5 @@ class Document extends \yii\db\ActiveRecord
             ['payload', 'default', 'value' => "{}"],
             [['createAt', 'modifyAt'], 'safe'],
         ];
-    }
-
-    public function returnforApi(): array
-    {
-        return [
-            'id' => $this->id,
-            'status' => self::STATUSES[$this->status],
-            'payload' => json_decode($this->payload),
-            'createAt' => (new \DateTime($this->createAt))->format('c'),
-            'modifyAt' => (new \DateTime($this->modifyAt))->format('c'),
-        ];
-    }
-
-    public function updateDoc(array $payload): bool
-    {
-        $newPayload = json_decode($this->payload);
-        foreach ($payload as $key => $value) {
-            $newPayload->$key = array_filter($value, function ($value) {
-                return $value !== null;
-            });
-        }
-        $newPayload = json_encode($newPayload);
-        $this->payload = $newPayload;
-        return $this->save();
     }
 }

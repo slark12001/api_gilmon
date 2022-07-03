@@ -57,6 +57,9 @@ $config = [
                     'pluralize' => false,
                     'tokens' => [
                         '{id}' => '<id:\\w[\\w,\\-]*>'
+                    ],
+                    'extraPatterns' => [
+                        'POST {id}/publish' => 'publish'
                     ]
                 ],
                 
